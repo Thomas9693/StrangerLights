@@ -1,12 +1,33 @@
+/*
+ * LCD RS pin to digital pin 12
+ * LCD Enable pin to digital pin 11
+ * LCD D4 pin to digital pin 6
+ * LCD D5 pin to digital pin 5
+ * LCD D6 pin to digital pin 4
+ * LCD D7 pin to digital pin 3
+ * LCD R/W pin to ground
+ * LCD VSS pin to ground
+ * LCD VCC pin to 5V
+ * 10K resistor:
+ * ends to +5V and ground
+ * wiper to LCD VO pin (pin 3)
+ */
+
+
+#include <PS2Keyboard.h>
+#include <LiquidCrystal.h>
 #include <WS2812.h>
 #define LED_NUM 100
 
+// initialize the library with the numbers of the interface pins
+LiquidCrystal lcd(12, 11, 6, 5, 4, 3);
+const int DataPin = 8;
+const int IRQpin =  2;
+String Str1;
+PS2Keyboard keyboard;
 WS2812 LED(LED_NUM); // 100 LED
 
-int a=0;
-
 //****************COLOR DEFINITIONS*************
-cRGB colors[] = {red, blue, yellow, purple, white, green, orange, cyan, pink};
 cRGB value;
 cRGB red;
 cRGB blue;
@@ -18,7 +39,7 @@ cRGB green;
 cRGB orange;
 cRGB cyan;
 cRGB pink;
-
+cRGB colors[] = {red, blue, yellow, purple, white, green, orange, cyan, pink};
 //***************LETTER DEFINITIONS**************
 
 int A[] = {0,1,2,3};
@@ -52,8 +73,9 @@ int Z[] = {95,96,97,99};
 
 cRGB ledcolors[100];
 
-void setup() {
-  LED.setOutput(6); // Digital Pin 6
+void setup() {  
+  Serial.begin(9600);
+  LED.setOutput(10); // Digital Pin 10 
   //************Define Colors*******************
   red.b = 0; red.g = 255; red.r = 0;
   colors[0] = red;
@@ -75,33 +97,144 @@ void setup() {
   pink.b = 255; pink.g = 255; pink.r = 0;
   colors[8] = pink;
   //************Reset all LEDs & initialize colors*****************
-  resetLEDs();
+  for(int i=0; i<100; i++){
+    int color = random(0,8);
+    ledcolors[i] = colors[color];
   }
+
+  // set up the LCD's number of columns and rows:
+  lcd.begin(16, 2);
+  // Print a message to the LCD.
+  lcd.print("Stranger Lights!");
+  delay(1000);
+  keyboard.begin(DataPin, IRQpin, PS2Keymap_German);
+  resetLEDs();
 }
 
 void loop() {
-  LED.sync(); // Sends the value to the LED
+  if (keyboard.available()) {  
+    // read the next key
+    char c = keyboard.read();
+    
+    // check for some of the special keys
+    if (c == PS2_ENTER) {
+      if(Str1[0] == '#'){
+        Serial.println(Str1[0]);
+      }else{
+        int l = Str1.length();
+        for(int i=0;i<l;i++){
+          char a = Str1[i];
+          Serial.println(a);
+          if(a == 'a'){
+            lightLetter(A);
+          }else if(a == 'b'){
+            lightLetter(B);
+          }else if(a == 'c'){
+            lightLetter(C);
+          }else if(a == 'd'){
+            lightLetter(D);
+          }else if(a == 'e'){
+            lightLetter(E);
+          }else if(a == 'f'){
+            lightLetter(F);
+          }else if(a == 'g'){
+            lightLetter(G);
+          }else if(a == 'h'){
+            lightLetter(H);
+          }else if(a == 'i'){
+            lightLetter(I);
+          }else if(a == 'j'){
+            lightLetter(J);
+          }else if(a == 'k'){
+            lightLetter(K);
+          }else if(a == 'l'){
+            lightLetter(L);
+          }else if(a == 'm'){
+            lightLetter(M);
+          }else if(a == 'n'){
+            lightLetter(N);
+          }else if(a == 'o'){
+            lightLetter(O);
+          }else if(a == 'p'){
+            lightLetter(P);
+          }else if(a == 'q'){
+            lightLetter(Q);
+          }else if(a == 'r'){
+            lightLetter(R);
+          }else if(a == 's'){
+            lightLetter(S);
+          }else if(a == 't'){
+            lightLetter(T);
+          }else if(a == 'u'){
+            lightLetter(U);
+          }else if(a == 'v'){
+            lightLetter(V);
+          }else if(a == 'w'){
+            lightLetter(W);
+          }else if(a == 'x'){
+            lightLetter(X);
+          }else if(a == 'y'){
+            lightLetter(Y);
+          }else if(a == 'z'){
+            lightLetter(Z);
+          }
+        }
+      }
+      clearLCD();
+      Str1 = "";
+    } else if (c == PS2_ESC) {
+      clearLCD();
+      Str1 = "";
+    } else if (c == PS2_DELETE) {
+      clearLCD();
+      int position = Str1.length();
+      position -= 1;
+      Str1.remove(position);
+    } else {
+      Str1 += c;
+    }
+  }
+  // set the cursor to column 0, line 1
+  // (note: line 1 is the second row, since counting begins with 0):
+
+  lcd.setCursor(0, 1);
+  // print the number of seconds since reset:
+  lcd.print(Str1);
 }
 
 void setColor(int led, cRGB color){
-  LED.set_crgb_at(led, color);
+  ledcolors[led] = color;
 }
   
-void lightLetter(int[] letter){
-  for(i=0; i<letter.length(); i++){
-    LED.set_crgb_at(i,ledcolors[i]);
-    delay(1000); //wait 1 sec
+void lightLetter(int letter[]){
+  int s = 0;
+  if(letter[3] == 0){
+    s = 3;
+  }else{
+    s = 4;
   }
-  delay(5000); //wait 5 sec
+  for(int i=0; i<s; i++){
+    int pos = letter[i];
+    LED.set_crgb_at(pos,ledcolors[pos]);
+    delay(1000); //wait 1 sec
+    LED.sync(); // Sends the value to the LED
+  }
+  delay(3000); //wait 5 sec
+  resetLEDs();
 }
 
 void resetLEDs(){
   value.b = 0; value.g = 0; value.r = 0;
-  for(int i=0; i<ledcolors.length(); i++){
-    int color = random(0,colors.length()-1);
-    ledcolors[i] = colors[color];
+  for(int i=0; i<100; i++){
     LED.set_crgb_at(i,value);
   }
+  LED.sync();
+}
+
+void clearLCD() {
+  lcd.clear();
+  lcd.begin(16, 2);
+  lcd.print("Stranger Lights!");
 }
 
 
