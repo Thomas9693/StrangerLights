@@ -73,8 +73,19 @@ int Z[] = {95,96,97,99};
 
 cRGB ledcolors[100];
 
+//used as input for RandomSeed
+int unusedPin = 0;
+
 void setup() {  
   Serial.begin(9600);
+
+  // if analog input pin 0 is unconnected, random analog
+  // noise will cause the call to randomSeed() to generate
+  // different seed numbers each time the sketch runs.
+  // randomSeed() will then shuffle the random function.
+  randomSeed(analogRead(unusedPin));
+
+  
   LED.setOutput(10); // Digital Pin 10 
   //************Define Colors*******************
   red.b = 0; red.g = 255; red.r = 0;
@@ -102,10 +113,7 @@ void setup() {
     ledcolors[i] = colors[color];
   }
 
-  // set up the LCD's number of columns and rows:
-  lcd.begin(16, 2);
-  // Print a message to the LCD.
-  lcd.print("Stranger Lights!");
+  clearLCD();
   delay(1000);
   keyboard.begin(DataPin, IRQpin, PS2Keymap_German);
   resetLEDs();
@@ -120,62 +128,64 @@ void loop() {
     if (c == PS2_ENTER) {
       if(Str1[0] == '#'){
         Serial.println(Str1[0]);
+        // TO DO
+        // Programmieren der LED Farbe
       }else{
         int l = Str1.length();
         for(int i=0;i<l;i++){
           char a = Str1[i];
           Serial.println(a);
-          if(a == 'a'){
+          if(a == 'a' || a == 'A'){
             lightLetter(A);
-          }else if(a == 'b'){
+          }else if(a == 'b' || a == 'B'){
             lightLetter(B);
-          }else if(a == 'c'){
+          }else if(a == 'c' || a == 'C'){
             lightLetter(C);
-          }else if(a == 'd'){
+          }else if(a == 'd' || a == 'D'){
             lightLetter(D);
-          }else if(a == 'e'){
+          }else if(a == 'e' || a == 'E'){
             lightLetter(E);
-          }else if(a == 'f'){
+          }else if(a == 'f' || a == 'F'){
             lightLetter(F);
-          }else if(a == 'g'){
+          }else if(a == 'g' || a == 'G'){
             lightLetter(G);
-          }else if(a == 'h'){
+          }else if(a == 'h' || a == 'H'){
             lightLetter(H);
-          }else if(a == 'i'){
+          }else if(a == 'i' || a == 'I'){
             lightLetter(I);
-          }else if(a == 'j'){
+          }else if(a == 'j' || a == 'J'){
             lightLetter(J);
-          }else if(a == 'k'){
+          }else if(a == 'k' || a == 'K'){
             lightLetter(K);
-          }else if(a == 'l'){
+          }else if(a == 'l' || a == 'L'){
             lightLetter(L);
-          }else if(a == 'm'){
+          }else if(a == 'm' || a == 'M'){
             lightLetter(M);
-          }else if(a == 'n'){
+          }else if(a == 'n' || a == 'N'){
             lightLetter(N);
-          }else if(a == 'o'){
+          }else if(a == 'o' || a == 'O'){
             lightLetter(O);
-          }else if(a == 'p'){
+          }else if(a == 'p' || a == 'P'){
             lightLetter(P);
-          }else if(a == 'q'){
+          }else if(a == 'q' || a == 'Q'){
             lightLetter(Q);
-          }else if(a == 'r'){
+          }else if(a == 'r' || a == 'R'){
             lightLetter(R);
-          }else if(a == 's'){
+          }else if(a == 's' || a == 'S'){
             lightLetter(S);
-          }else if(a == 't'){
+          }else if(a == 't' || a == 'T'){
             lightLetter(T);
-          }else if(a == 'u'){
+          }else if(a == 'u' || a == 'U'){
             lightLetter(U);
-          }else if(a == 'v'){
+          }else if(a == 'v' || a == 'V'){
             lightLetter(V);
-          }else if(a == 'w'){
+          }else if(a == 'w' || a == 'W'){
             lightLetter(W);
-          }else if(a == 'x'){
+          }else if(a == 'x' || a == 'X'){
             lightLetter(X);
-          }else if(a == 'y'){
+          }else if(a == 'y' || a == 'Y'){
             lightLetter(Y);
-          }else if(a == 'z'){
+          }else if(a == 'z' || a == 'Z'){
             lightLetter(Z);
           }
         }
@@ -205,7 +215,8 @@ void loop() {
 void setColor(int led, cRGB color){
   ledcolors[led] = color;
 }
-  
+
+//light all LEDs of a letter one after the other
 void lightLetter(int letter[]){
   int s = 0;
   if(letter[3] == 0){
@@ -223,6 +234,25 @@ void lightLetter(int letter[]){
   resetLEDs();
 }
 
+//light all leds of a letter at once
+void lightLetterAllLEDs(int letter[]) {
+  int s = 0;
+  if(letter[3] == 0){
+    s = 3;
+  }else{
+    s = 4;
+  }
+  for(int i=0; i<s; i++){
+    int pos = letter[i];
+    LED.set_crgb_at(pos,ledcolors[pos]);
+  }
+  LED.sync(); // Sends the value to the LED
+  delay(3000); //wait 5 sec
+  resetLEDs();
+}
+
+
+
 void resetLEDs(){
   value.b = 0; value.g = 0; value.r = 0;
   for(int i=0; i<100; i++){
@@ -234,7 +264,7 @@ void resetLEDs(){
 void clearLCD() {
   lcd.clear();
   lcd.begin(16, 2);
-  lcd.print("Stranger Lights!");
+  lcd.print("Stranger Lights!                ");
 }
 
 
