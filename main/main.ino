@@ -64,11 +64,11 @@ int R[] = {64,65,66,67};
 int S[] = {68,69,70,71};
 int T[] = {72,73,74,75};
 int U[] = {76,77,78,79};
-int V[] = {80,81,82};
-int W[] = {83,84,85,86};
-int X[] = {87,88,89,90};
-int Y[] = {91,92,93,94};
-int Z[] = {95,96,97,99};
+int V[] = {80,81,82,83};
+int W[] = {84,85,86,87};
+int X[] = {88,89,90,91};
+int Y[] = {92,93,94,95};
+int Z[] = {96,97,98,99};
 
 //*************LED Colors
 
@@ -169,57 +169,57 @@ void loop() {
           char a = Str1[i];
           Serial.println(a);
           if(a == 'a' || a == 'A'){
-            lightLetter(A);
+            lightLetter(A,4);
           }else if(a == 'b' || a == 'B'){
-            lightLetter(B);
+            lightLetter(B,4);
           }else if(a == 'c' || a == 'C'){
-            lightLetter(C);
+            lightLetter(C,4);
           }else if(a == 'd' || a == 'D'){
-            lightLetter(D);
+            lightLetter(D,4);
           }else if(a == 'e' || a == 'E'){
-            lightLetter(E);
+            lightLetter(E,4);
           }else if(a == 'f' || a == 'F'){
-            lightLetter(F);
+            lightLetter(F,3);
           }else if(a == 'g' || a == 'G'){
-            lightLetter(G);
+            lightLetter(G,4);
           }else if(a == 'h' || a == 'H'){
-            lightLetter(H);
+            lightLetter(H,4);
           }else if(a == 'i' || a == 'I'){
-            lightLetter(I);
+            lightLetter(I,4);
           }else if(a == 'j' || a == 'J'){
-            lightLetter(J);
+            lightLetter(J,4);
           }else if(a == 'k' || a == 'K'){
-            lightLetter(K);
+            lightLetter(K,3);
           }else if(a == 'l' || a == 'L'){
-            lightLetter(L);
+            lightLetter(L,4);
           }else if(a == 'm' || a == 'M'){
-            lightLetter(M);
+            lightLetter(M,4);
           }else if(a == 'n' || a == 'N'){
-            lightLetter(N);
+            lightLetter(N,4);
           }else if(a == 'o' || a == 'O'){
-            lightLetter(O);
+            lightLetter(O,4);
           }else if(a == 'p' || a == 'P'){
-            lightLetter(P);
+            lightLetter(P,3);
           }else if(a == 'q' || a == 'Q'){
-            lightLetter(Q);
+            lightLetter(Q,4);
           }else if(a == 'r' || a == 'R'){
-            lightLetter(R);
+            lightLetter(R,4);
           }else if(a == 's' || a == 'S'){
-            lightLetter(S);
+            lightLetter(S,4);
           }else if(a == 't' || a == 'T'){
-            lightLetter(T);
+            lightLetter(T,4);
           }else if(a == 'u' || a == 'U'){
-            lightLetter(U);
+            lightLetter(U,4);
           }else if(a == 'v' || a == 'V'){
-            lightLetter(V);
+            lightLetter(V,4);
           }else if(a == 'w' || a == 'W'){
-            lightLetter(W);
+            lightLetter(W,4);
           }else if(a == 'x' || a == 'X'){
-            lightLetter(X);
+            lightLetter(X,4);
           }else if(a == 'y' || a == 'Y'){
-            lightLetter(Y);
+            lightLetter(Y,4);
           }else if(a == 'z' || a == 'Z'){
-            lightLetter(Z);
+            lightLetter(Z,4);
           }
         }
       }
@@ -250,41 +250,29 @@ void setColor(int led, cRGB color){
 }
 
 //light all LEDs of a letter one after the other
-void lightLetter(int letter[]){
+void lightLetter(int letter[], int l){
   if(mode == 0){
-    int s = 0;
-    if(letter[3] == 0){
-      s = 3;
-    }else{
-      s = 4;
-    }
-    for(int i=0; i<s; i++){
+    for(int i=0; i<l; i++){
       int pos = letter[i];
       LED.set_crgb_at(pos,ledcolors[pos]);
-      delay(1000); //wait 1 sec
+      delay(200); //wait 1 sec
       LED.sync(); // Sends the value to the LED
     }
-    delay(3000); //wait 5 sec
+    delay(1000); //wait 5 sec
     resetLEDs();
   }else{
-    lightLetterAllLEDs(letter);
+    lightLetterAllLEDs(letter, l);
   }
 }
 
 //light all leds of a letter at once
-void lightLetterAllLEDs(int letter[]) {
-  int s = 0;
-  if(letter[3] == 0){
-    s = 3;
-  }else{
-    s = 4;
-  }
-  for(int i=0; i<s; i++){
+void lightLetterAllLEDs(int letter[], int l) {
+  for(int i=0; i<l; i++){
     int pos = letter[i];
     LED.set_crgb_at(pos,ledcolors[pos]);
   }
   LED.sync(); // Sends the value to the LED
-  delay(3000); //wait 5 sec
+  delay(1000); //wait 5 sec
   resetLEDs();
   delay(1000);
 }
